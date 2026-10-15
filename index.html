@@ -202,9 +202,19 @@ footer.note{
       if (exact.length) rows = exact;
     }
 
+    // 검색어도 없고 부서 필터도 "전체"면 291명을 한꺼번에 다 보여주지 않고,
+    // 검색을 유도하는 안내 화면만 보여준다(한눈에 들어오는 짧은 화면 유지).
+    var idle = !rawQ && activeSection === "전체";
+    if (idle) rows = [];
+
     metaLabel.textContent = activeSection;
-    metaCount.textContent = rows.length + "건";
+    metaCount.textContent = idle ? "" : rows.length + "건";
     emptyEl.hidden = rows.length !== 0;
+    if (idle){
+      emptyEl.innerHTML = "<b>이름, 부서, 초성으로 검색하세요</b>위 검색창에 입력하면 바로 찾아드립니다.";
+    } else if (rows.length === 0){
+      emptyEl.innerHTML = "<b>검색 결과가 없어요</b>이름, 부서명, 초성 또는 내선번호로 다시 찾아보세요.";
+    }
 
     var html = "";
     for (var i=0;i<rows.length;i++){
