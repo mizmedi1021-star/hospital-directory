@@ -1,0 +1,329 @@
+<title>미즈메디 내선번호</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="병원내선번호">
+<meta name="theme-color" content="#0f4c4f">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* layout: sticky search header + flat scrolling result list of contact cards */
+/* 사용자가 밝은 화면을 원해서 다크모드 전환 없이 항상 밝은 배경으로 고정함 */
+:root{
+  --bg:#f5f3ef; --surface:#ffffff; --surface-2:#ececE6; --ink:#1b2322; --muted:#6b706d;
+  --accent:#0f4c4f; --accent-ink:#ffffff; --line:#e3e0d8; --chip:#eceee9; --chip-active:#0f4c4f;
+  --danger:#8a3b2a; color-scheme:light;
+  font-family:"Noto Sans KR",system-ui,-apple-system,"Malgun Gothic",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  -webkit-tap-highlight-color:transparent;
+}
+.wrap{max-width:720px;margin:0 auto;padding-inline:16px}
+
+header.top{
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:5;
+  background:var(--bg); padding-top:calc(10px + env(safe-area-inset-top,0px));
+  padding-bottom:10px; border-bottom:1px solid var(--line);
+}
+h1{
+  font-size:15px; font-weight:700; letter-spacing:.2px; margin:0 0 10px; color:var(--muted);
+  display:flex; align-items:center; gap:8px;
+}
+h1 .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);display:inline-block}
+
+.searchbar{
+  display:flex; align-items:center; gap:8px; background:var(--surface);
+  border:1px solid var(--line); border-radius:14px; padding:10px 12px;
+}
+.searchbar svg{flex:none; color:var(--muted)}
+.searchbar input{
+  flex:1; min-width:0; border:none; outline:none; background:transparent; color:var(--ink);
+  font:inherit; font-size:16px;
+}
+.searchbar input::placeholder{color:var(--muted)}
+.clearbtn{
+  flex:none; border:none; background:var(--chip); color:var(--muted); width:22px;height:22px;
+  border-radius:50%; font-size:13px; line-height:1; cursor:pointer; display:none;
+}
+.searchbar.has-text .clearbtn{display:block}
+
+.chips{display:flex; gap:6px; overflow-x:auto; margin-top:10px; padding-bottom:2px; scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex:none; font-size:12.5px; font-weight:600; color:var(--muted); background:var(--chip);
+  border:1px solid transparent; padding:6px 12px; border-radius:999px; cursor:pointer; white-space:nowrap;
+}
+.chip[aria-pressed="true"]{background:var(--chip-active); color:var(--accent-ink); border-color:transparent}
+
+.meta{font-size:12.5px; color:var(--muted); margin:10px 2px 6px; display:flex; justify-content:space-between}
+.meta b{color:var(--ink); font-variant-numeric:tabular-nums}
+
+main{padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))}
+.list{display:flex; flex-direction:column; gap:8px}
+
+.card{
+  display:flex; flex-direction:column; gap:4px; background:var(--surface);
+  border:1px solid var(--line); border-radius:14px; padding:13px 14px;
+}
+.row1{font-size:12.5px; color:var(--muted); overflow-wrap:anywhere; line-height:1.4}
+.row1 .seg + .seg::before{content:" · "}
+.name{font-size:17px; font-weight:700; line-height:1.35; overflow-wrap:anywhere}
+.row3{display:flex; align-items:center; gap:8px; margin-top:2px}
+.row4{font-size:12.5px; color:var(--muted); display:flex; align-items:center; gap:4px; overflow-wrap:anywhere; line-height:1.4}
+.row4 svg{flex:none; width:12px;height:12px; opacity:.8}
+
+a.callbtn{
+  display:flex; align-items:center; gap:7px; text-decoration:none; background:var(--accent);
+  color:var(--accent-ink); font-weight:700; font-size:16px; padding:8px 13px; border-radius:11px;
+  font-variant-numeric:tabular-nums; letter-spacing:.3px;
+}
+a.callbtn svg{width:15px;height:15px}
+button.copybtn{
+  flex:none; border:1px solid var(--line); background:transparent; color:var(--muted); width:34px;height:34px;
+  border-radius:10px; display:flex;align-items:center;justify-content:center; cursor:pointer;
+}
+button.copybtn svg{width:15px;height:15px}
+button.copybtn.copied{color:var(--accent); border-color:var(--accent)}
+
+.empty{text-align:center; color:var(--muted); padding:48px 16px; font-size:14px; line-height:1.7}
+.empty b{display:block; font-size:15px; color:var(--ink); margin-bottom:4px}
+
+.toast{
+  position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%);
+  background:var(--ink); color:var(--bg); font-size:13px; padding:9px 16px; border-radius:999px;
+  opacity:0; pointer-events:none; transition:opacity .18s ease, transform .18s ease;
+}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(-4px)}
+
+footer.note{
+  max-width:720px;margin:0 auto;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));
+  font-size:11.5px; color:var(--muted); text-align:center; line-height:1.6;
+}
+@media (prefers-reduced-motion:reduce){ .toast{transition:none} }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <h1><span class="dot"></span>미즈메디병원 내선번호</h1>
+    <div class="searchbar" id="searchbar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="q" type="search" inputmode="search" autocomplete="off" autocorrect="off" spellcheck="false"
+             placeholder="이름, 부서, 초성(ㄱㅈㅎ)으로 검색" aria-label="내선번호 검색">
+      <button class="clearbtn" id="clearBtn" aria-label="지우기" type="button">✕</button>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="meta"><span id="metaLabel">전체</span><b id="metaCount">0건</b></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="list" id="list"></div>
+  <div class="empty" id="empty" hidden><b>검색 결과가 없어요</b>이름, 부서명, 초성 또는 내선번호로 다시 찾아보세요.</div>
+</main>
+
+<footer class="note">
+  번호를 누르면 02-2007-XXXX(내선 4자리)로 연결됩니다.<br>
+  업데이트: <span id="srcLabel"></span> · 총 <span id="totalLabel"></span>건 · 자동 추출본(오탈자 발견 시 총무팀으로 알려주세요)
+</footer>
+
+<div class="toast" id="toast">내선번호를 복사했어요</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var CHO = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ";
+  function choseong(str){
+    var out = "";
+    for (var i=0;i<str.length;i++){
+      var code = str.charCodeAt(i) - 0xAC00;
+      out += (code>=0 && code<=11171) ? CHO[Math.floor(code/588)] : str[i];
+    }
+    return out;
+  }
+  function flat(s){ return (s||"").replace(/\s+/g,"").toLowerCase(); }
+  // 서울 지역번호 02 + 대표번호 2007 뒤에 내선 4자리를 붙여야 외부 휴대폰에서 실제로 연결된다
+  var DID_PREFIX = "02-2007-";
+  function primaryExt(ext){
+    var m = (ext||"").match(/\d{4}/) || (ext||"").match(/\d{2,}/);
+    return m ? m[0] : "";
+  }
+  function telHref(ext){
+    var p = primaryExt(ext);
+    if (!p || p.length !== 4) return "";
+    return "tel:" + DID_PREFIX.replace(/-/g,"") + p;
+  }
+  function escapeHtml(s){
+    return (s||"").replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+  function initials(name){
+    if (!name) return "·";
+    return name.length >= 2 ? name.slice(0,1) : name;
+  }
+
+  var listEl = document.getElementById("list");
+  var emptyEl = document.getElementById("empty");
+  var qEl = document.getElementById("q");
+  var chipsEl = document.getElementById("chips");
+  var metaLabel = document.getElementById("metaLabel");
+  var metaCount = document.getElementById("metaCount");
+  var searchbar = document.getElementById("searchbar");
+  var clearBtn = document.getElementById("clearBtn");
+  var toastEl = document.getElementById("toast");
+
+  var ALL = [];
+  var activeSection = "전체";
+  var toastTimer = null;
+
+  function render(){
+    var q = flat(qEl.value);
+    var qCho = choseong(q);
+    var rows = ALL.filter(function(it){
+      if (activeSection !== "전체" && it.section !== activeSection) return false;
+      if (!q) return true;
+      if (it._flat.indexOf(q) !== -1) return true;
+      if (it._cho.indexOf(qCho) !== -1 && qCho.length>0) return true;
+      if (it.ext.indexOf(qEl.value.trim()) !== -1 && qEl.value.trim()) return true;
+      return false;
+    });
+
+    metaLabel.textContent = activeSection;
+    metaCount.textContent = rows.length + "건";
+    emptyEl.hidden = rows.length !== 0;
+
+    var html = "";
+    for (var i=0;i<rows.length;i++){
+      var it = rows[i];
+      var href = telHref(it.ext);
+      var roleLabel = it.role || (it.isRoom ? "" : "사원");
+      var topParts = [];
+      if (it.dept) topParts.push(escapeHtml(it.dept));
+      if (roleLabel) topParts.push(escapeHtml(roleLabel));
+      var topHtml = topParts.map(function(s){return '<span class="seg">'+s+'</span>';}).join("");
+
+      // 순서: 근무부서 -> 직책(없으면 사원) -> 이름 -> 내선번호 -> 근무위치
+      html += '<div class="card">' +
+        '<div class="row1">' + (topHtml || "&nbsp;") + '</div>' +
+        '<div class="name">' + escapeHtml(it.display) + '</div>' +
+        '<div class="row3">' +
+          (href ? '<a class="callbtn" href="'+href+'">'+phoneIcon()+escapeHtml(it.ext)+'</a>'
+                : '<span class="callbtn" style="opacity:.5">'+escapeHtml(it.ext||"-")+'</span>') +
+          '<button class="copybtn" data-copy="'+escapeHtml(it.ext)+'" aria-label="번호 복사" type="button">'+copyIcon()+'</button>' +
+        '</div>' +
+        '<div class="row4">' + (it.loc ? locIcon()+escapeHtml(it.loc) : "") + '</div>' +
+        '</div>';
+    }
+    listEl.innerHTML = html;
+  }
+
+  function phoneIcon(){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5c0 8.3 6.7 15 15 15l3-4-5-3-2 2c-2.2-1-4-2.8-5-5l2-2-3-5z"/></svg>';
+  }
+  function copyIcon(){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+  }
+  function roomIcon(){
+    return '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-6h6v6"/></svg>';
+  }
+  function locIcon(){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-7.1 7-12.5A7 7 0 0 0 5 9.5C5 14.9 12 22 12 22z"/><circle cx="12" cy="9.5" r="2.4"/></svg>';
+  }
+
+  function showToast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove("show"); }, 1400);
+  }
+
+  function copyText(text){
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){
+        showToast("내선번호를 복사했어요 (" + text + ")");
+      }).catch(function(){ fallbackCopy(text); });
+    } else {
+      fallbackCopy(text);
+    }
+  }
+  function fallbackCopy(text){
+    try{
+      var ta = document.createElement("textarea");
+      ta.value = text; ta.style.position="fixed"; ta.style.opacity="0";
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      showToast("내선번호를 복사했어요 (" + text + ")");
+    }catch(e){
+      showToast("복사에 실패했어요. 번호: " + text);
+    }
+  }
+
+  listEl.addEventListener("click", function(e){
+    var btn = e.target.closest(".copybtn");
+    if (!btn) return;
+    copyText(btn.getAttribute("data-copy"));
+  });
+
+  qEl.addEventListener("input", function(){
+    searchbar.classList.toggle("has-text", !!qEl.value);
+    render();
+  });
+  clearBtn.addEventListener("click", function(){
+    qEl.value = ""; searchbar.classList.remove("has-text"); qEl.focus(); render();
+  });
+
+  function buildChips(sections){
+    var all = ["전체"].concat(sections);
+    chipsEl.innerHTML = all.map(function(s){
+      return '<button class="chip" data-s="'+escapeHtml(s)+'" aria-pressed="'+(s===activeSection)+'" type="button">'+escapeHtml(s)+'</button>';
+    }).join("");
+  }
+  chipsEl.addEventListener("click", function(e){
+    var b = e.target.closest(".chip");
+    if (!b) return;
+    activeSection = b.getAttribute("data-s");
+    Array.prototype.forEach.call(chipsEl.querySelectorAll(".chip"), function(c){
+      c.setAttribute("aria-pressed", String(c===b));
+    });
+    render();
+  });
+
+  function boot(data){
+    ALL = data.items.map(function(it){
+      it._flat = flat(it.search);
+      it._cho = flat(it.searchCho);
+      return it;
+    });
+    ALL.sort(function(a,b){ return (a.display||"").localeCompare(b.display||"", "ko"); });
+
+    var sections = [];
+    ALL.forEach(function(it){ if (sections.indexOf(it.section) === -1) sections.push(it.section); });
+    buildChips(sections);
+
+    document.getElementById("srcLabel").textContent = data.generatedFrom || "";
+    document.getElementById("totalLabel").textContent = data.count;
+
+    render();
+  }
+
+  fetch("directory.json").then(function(r){ return r.json(); }).then(boot).catch(function(err){
+    listEl.innerHTML = "";
+    emptyEl.hidden = false;
+    emptyEl.innerHTML = "<b>데이터를 불러오지 못했어요</b>directory.json 파일을 확인해주세요.";
+    console.error(err);
+  });
+
+  if ("serviceWorker" in navigator){
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("sw.js").catch(function(){});
+    });
+  }
+})();
+</script>
