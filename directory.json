@@ -1,6 +1,6 @@
 {
 "generatedFrom": "미즈메디병원 내선번호 (26.07.21).pdf",
-"count": 298,
+"count": 294,
 "items": [
 {
 "section": "진료부",
@@ -29,20 +29,6 @@
 "isRoom": false,
 "search": "오은숙 내분비내과 진료실11  ",
 "searchCho": "ㅇㅇㅅ ㄴㅂㅂㄴㄱ ㅈㄹㅅ11  "
-},
-{
-"section": "진료부",
-"dept": "내분비내과",
-"room": "진료실12",
-"role": "",
-"task": "",
-"name": "김성훈",
-"ext": "1346",
-"loc": "본관 4층",
-"display": "김성훈",
-"isRoom": false,
-"search": "김성훈 내분비내과 진료실12  ",
-"searchCho": "ㄱㅅㅎ ㄴㅂㅂㄴㄱ ㅈㄹㅅ12  "
 },
 {
 "section": "진료부",
@@ -85,20 +71,6 @@
 "isRoom": false,
 "search": "박준혁 소화기내과 진료실8  ",
 "searchCho": "ㅂㅈㅎ ㅅㅎㄱㄴㄱ ㅈㄹㅅ8  "
-},
-{
-"section": "진료부",
-"dept": "소화기내과",
-"room": "진료실9",
-"role": "",
-"task": "",
-"name": "이주현",
-"ext": "1596",
-"loc": "본관 4층",
-"display": "이주현",
-"isRoom": false,
-"search": "이주현 소화기내과 진료실9  ",
-"searchCho": "ㅇㅈㅎ ㅅㅎㄱㄴㄱ ㅈㄹㅅ9  "
 },
 {
 "section": "진료부",
@@ -323,20 +295,6 @@
 "isRoom": false,
 "search": "이유경 산부인과 진료실7  ",
 "searchCho": "ㅇㅇㄱ ㅅㅂㅇㄱ ㅈㄹㅅ7  "
-},
-{
-"section": "진료부",
-"dept": "산부인과",
-"room": "진료실8",
-"role": "",
-"task": "",
-"name": "김원지",
-"ext": "1318",
-"loc": "본관 3층",
-"display": "김원지",
-"isRoom": false,
-"search": "김원지 산부인과 진료실8  ",
-"searchCho": "ㄱㅇㅈ ㅅㅂㅇㄱ ㅈㄹㅅ8  "
 },
 {
 "section": "진료부",
@@ -3109,20 +3067,6 @@
 "isRoom": false,
 "search": "강민영 약제과   외래",
 "searchCho": "ㄱㅁㅇ ㅇㅈㄱ   ㅇㄹ"
-},
-{
-"section": "진료지원",
-"dept": "약제과",
-"room": "",
-"role": "",
-"task": "원외처방",
-"name": "정새희",
-"ext": "1290",
-"loc": "본관 1층",
-"display": "정새희",
-"isRoom": false,
-"search": "정새희 약제과   원외처방",
-"searchCho": "ㅈㅅㅎ ㅇㅈㄱ   ㅇㅇㅊㅂ"
 },
 {
 "section": "진료지원",
