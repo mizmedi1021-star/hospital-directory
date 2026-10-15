@@ -185,14 +185,22 @@ footer.note{
   function render(){
     var q = flat(qEl.value);
     var qCho = choseong(q);
+    var rawQ = qEl.value.trim();
     var rows = ALL.filter(function(it){
       if (activeSection !== "전체" && it.section !== activeSection) return false;
       if (!q) return true;
       if (it._flat.indexOf(q) !== -1) return true;
       if (it._cho.indexOf(qCho) !== -1 && qCho.length>0) return true;
-      if (it.ext.indexOf(qEl.value.trim()) !== -1 && qEl.value.trim()) return true;
+      if (it.ext.indexOf(rawQ) !== -1 && rawQ) return true;
       return false;
     });
+
+    // 이름을 정확히 다 입력했으면(예: "이정철") 비슷한 이름까지 다 보여주지 않고
+    // 그 이름과 정확히 같은 사람만 남긴다. 동명이인이면 그 사람들만 나온다.
+    if (rawQ){
+      var exact = rows.filter(function(it){ return it.name === rawQ; });
+      if (exact.length) rows = exact;
+    }
 
     metaLabel.textContent = activeSection;
     metaCount.textContent = rows.length + "건";
