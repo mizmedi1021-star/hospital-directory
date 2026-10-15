@@ -67,15 +67,20 @@ main{padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))}
 .list{display:flex; flex-direction:column; gap:8px}
 
 .card{
-  display:flex; flex-direction:column; gap:4px; background:var(--surface);
-  border:1px solid var(--line); border-radius:14px; padding:13px 14px;
+  display:flex; align-items:center; gap:12px; background:var(--surface);
+  border:1px solid var(--line); border-radius:14px; padding:12px 12px;
 }
-.row1{font-size:12.5px; color:var(--muted); overflow-wrap:anywhere; line-height:1.4}
-.row1 .seg + .seg::before{content:" · "}
-.name{font-size:17px; font-weight:700; line-height:1.35; overflow-wrap:anywhere}
-.row3{display:flex; align-items:center; gap:8px; margin-top:2px}
-.row4{font-size:12.5px; color:var(--muted); display:flex; align-items:center; gap:4px; overflow-wrap:anywhere; line-height:1.4}
-.row4 svg{flex:none; width:12px;height:12px; opacity:.8}
+.avatar{
+  flex:none; width:38px;height:38px;border-radius:10px; display:flex;align-items:center;justify-content:center;
+  background:var(--surface-2); color:var(--accent); font-weight:700; font-size:14px;
+}
+.avatar.room{color:var(--muted)}
+.info{flex:1; min-width:0}
+.name{font-size:16px; font-weight:700; line-height:1.3; overflow-wrap:anywhere}
+.sub{font-size:12.5px; color:var(--muted); margin-top:2px; overflow-wrap:anywhere; line-height:1.4}
+.sub .seg + .seg::before{content:" · "}
+
+.callwrap{flex:none; display:flex; align-items:center; gap:6px}
 
 a.callbtn{
   display:flex; align-items:center; gap:7px; text-decoration:none; background:var(--accent);
@@ -210,23 +215,22 @@ footer.note{
     for (var i=0;i<rows.length;i++){
       var it = rows[i];
       var href = telHref(it.ext);
-      var roleLabel = it.role || (it.isRoom ? "" : "사원");
-      var topParts = [];
-      if (it.dept) topParts.push(escapeHtml(it.dept));
-      if (roleLabel) topParts.push(escapeHtml(roleLabel));
-      var topHtml = topParts.map(function(s){return '<span class="seg">'+s+'</span>';}).join("");
+      var subParts = [];
+      if (it.dept) subParts.push(escapeHtml(it.dept));
+      if (it.room && it.room !== it.dept) subParts.push(escapeHtml(it.room));
+      if (it.role) subParts.push(escapeHtml(it.role));
+      if (it.task) subParts.push(escapeHtml(it.task));
+      var subHtml = subParts.map(function(s){return '<span class="seg">'+s+'</span>';}).join("");
 
-      // 순서: 근무부서 -> 직책(없으면 사원) -> 이름 -> 내선번호 -> 근무위치
       html += '<div class="card">' +
-        '<div class="row1">' + (topHtml || "&nbsp;") + '</div>' +
-        '<div class="name">' + escapeHtml(it.display) + '</div>' +
-        '<div class="row3">' +
+        '<div class="avatar' + (it.isRoom? ' room':'') + '">' + (it.isRoom ? roomIcon() : escapeHtml(initials(it.display))) + '</div>' +
+        '<div class="info"><div class="name">' + escapeHtml(it.display) + '</div>' +
+        '<div class="sub">' + (subHtml || "&nbsp;") + '</div></div>' +
+        '<div class="callwrap">' +
           (href ? '<a class="callbtn" href="'+href+'">'+phoneIcon()+escapeHtml(it.ext)+'</a>'
                 : '<span class="callbtn" style="opacity:.5">'+escapeHtml(it.ext||"-")+'</span>') +
           '<button class="copybtn" data-copy="'+escapeHtml(it.ext)+'" aria-label="번호 복사" type="button">'+copyIcon()+'</button>' +
-        '</div>' +
-        '<div class="row4">' + (it.loc ? locIcon()+escapeHtml(it.loc) : "") + '</div>' +
-        '</div>';
+        '</div></div>';
     }
     listEl.innerHTML = html;
   }
