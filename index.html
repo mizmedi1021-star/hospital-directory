@@ -371,7 +371,17 @@ footer.note{
     render();
   }
 
-  fetch("directory.json").then(function(r){ return r.json(); }).then(boot).catch(function(err){
+  Promise.all([
+    fetch("directory.json").then(function(r){ return r.json(); }),
+    fetch("directory_dearone.json").then(function(r){ return r.json(); }).catch(function(){ return {items:[]}; })
+  ]).then(function(results){
+    var hosp = results[0], dear = results[1] || {items:[]};
+    boot({
+      generatedFrom: hosp.generatedFrom,
+      count: (hosp.items||[]).length + (dear.items||[]).length,
+      items: (hosp.items||[]).concat(dear.items||[])
+    });
+  }).catch(function(err){
     listEl.innerHTML = "";
     emptyEl.hidden = false;
     emptyEl.innerHTML = "<b>데이터를 불러오지 못했어요</b>directory.json 파일을 확인해주세요.";
